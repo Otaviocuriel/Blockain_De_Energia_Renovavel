@@ -4,7 +4,6 @@
 {{-- HERO SECTION --}}
 <section class="relative overflow-hidden">
   <div class="absolute inset-0">
-    <img src="{{ asset('Imagens/foto3.jpg') }}" class="w-full h-full object-cover" alt="Energia Renovável" />
     <div class="absolute inset-0 bg-slate-900/70 backdrop-blur-[1px]"></div>
     <div class="absolute -top-24 -right-24 w-96 h-96 bg-emerald-400/20 rounded-full blur-3xl"></div>
     <div class="absolute bottom-0 -left-10 w-80 h-80 bg-indigo-500/20 rounded-full blur-3xl"></div>

@@ -7,7 +7,10 @@
         <title>{{ config('app.name','Blockchain Verde') }} – Acesso</title>
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-        @vite(['resources/css/app.css','resources/js/app.js'])
+    <!-- Fallback temporário: CDN do Tailwind e Alpine para quando o Vite não estiver rodando -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    @vite(['resources/css/app.css','resources/js/app.js'])
     </head>
     <body class="min-h-screen bg-gray-950 text-gray-100 font-sans antialiased flex flex-col relative overflow-hidden">
         <!-- Background / Hero -->

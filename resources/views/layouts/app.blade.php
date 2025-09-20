@@ -10,9 +10,9 @@
     @vite(['resources/css/app.css','resources/js/app.js'])
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
 </head>
-<body class="min-h-full bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 flex flex-col" x-data x-init="document.querySelectorAll('[data-mask]')?.forEach(el=>{el.addEventListener('input',e=>{let m=e.target.getAttribute('data-mask');let v=e.target.value.replace(/\D/g,'');if(m==='cpf'){v=v.slice(0,11).replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');}if(m==='cnpj'){v=v.slice(0,14).replace(/(\d{2})(\d)/,'$1.$2').replace(/(\d{2}).(\d{3})(\d)/,'$1.$2.$3').replace(/(\d{3}).(\d{3})(\d)/,'$1.$2/$3').replace(/(\d{4})(\d{1,2})$/,'$1-$2');}if(m==='cep'){v=v.slice(0,8).replace(/(\d{5})(\d)/,'$1-$2');}if(m==='telefone'){v=v.slice(0,11).replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d{4})$/,'$1-$2');}e.target.value=v;});});">
+<body class="min-h-full bg-gray-950 text-gray-100 flex flex-col" x-data x-init="document.querySelectorAll('[data-mask]')?.forEach(el=>{el.addEventListener('input',e=>{let m=e.target.getAttribute('data-mask');let v=e.target.value.replace(/\D/g,'');if(m==='cpf'){v=v.slice(0,11).replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d)/,'$1.$2').replace(/(\d{3})(\d{1,2})$/,'$1-$2');}if(m==='cnpj'){v=v.slice(0,14).replace(/(\d{2})(\d)/,'$1.$2').replace(/(\d{2}).(\d{3})(\d)/,'$1.$2.$3').replace(/(\d{3}).(\d{3})(\d)/,'$1.$2/$3').replace(/(\d{4})(\d{1,2})$/,'$1-$2');}if(m==='cep'){v=v.slice(0,8).replace(/(\d{5})(\d)/,'$1-$2');}if(m==='telefone'){v=v.slice(0,11).replace(/(\d{2})(\d)/,'($1) $2').replace(/(\d{5})(\d{4})$/,'$1-$2');}e.target.value=v;});});">
     <!-- Navbar -->
-    <nav class="bg-gradient-to-r from-slate-700 to-slate-600 text-white shadow relative z-20">
+    <nav class="bg-green-900 text-white shadow-lg relative z-20 border-b border-green-800">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center justify-between">
                 <div class="flex items-center gap-6">
@@ -32,13 +32,13 @@
                 </div>
                 <div class="hidden md:flex items-center gap-3">
                     @guest
-                        <a href="{{ route('register') }}" class="px-4 py-2 rounded-md bg-white text-slate-700 text-sm font-medium hover:bg-slate-100">Registrar</a>
-                        <a href="{{ route('login') }}" class="px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-500">Login</a>
+                        <a href="{{ route('register') }}" class="px-4 py-2 rounded-md bg-green-700 text-white text-sm font-medium hover:bg-green-600 transition">Registrar</a>
+                        <a href="{{ route('login') }}" class="px-4 py-2 rounded-md bg-gray-900 text-white text-sm font-medium hover:bg-gray-800 transition">Login</a>
                     @else
                         <span class="text-sm opacity-80">Olá, {{ auth()->user()->name }}</span>
                         <form method="POST" action="{{ route('logout') }}" class="inline">
                             @csrf
-                            <button class="px-3 py-2 bg-red-500 hover:bg-red-600 rounded-md text-sm font-medium">Sair</button>
+                            <button class="px-3 py-2 bg-green-700 hover:bg-green-600 rounded-md text-sm font-medium">Sair</button>
                         </form>
                     @endguest
                 </div>
@@ -47,7 +47,7 @@
                 </button>
             </div>
         </div>
-        <div x-show="mobile" x-transition class="md:hidden border-t border-white/10 bg-slate-700/95 backdrop-blur">
+    <div x-show="mobile" x-transition class="md:hidden border-t border-green-800 bg-green-900/95 backdrop-blur">
             <div class="px-4 py-3 space-y-2 text-sm">
                 <a href="{{ route('home') }}" class="block">Início</a>
                 <a href="{{ route('comentarios') }}" class="block">Comentários</a>
