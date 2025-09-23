@@ -23,8 +23,8 @@
 
         <!-- Minimal top link -->
         <div class="px-6 pt-6 flex items-center justify-between max-w-7xl mx-auto w-full">
-            <a href="{{ route('home') }}" class="flex items-center gap-2 text-sm font-medium text-white/90 hover:text-white transition">
-                <svg class="w-5 h-5 text-yellow-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            <a href="{{ route('home') }}" class="flex items-center gap-3 text-lg font-bold text-white/90 hover:text-white transition">
+                <img src="{{ asset('Imagens/minha_logo.png') }}" alt="Logo" class="w-10 h-10 object-contain" />
                 Blockchain Verde
             </a>
             @if (Route::has('login'))
@@ -46,7 +46,7 @@
                 <div class="relative bg-white/10 backdrop-blur-xl rounded-2xl border border-white/15 shadow-xl p-8">
                     <div class="flex flex-col items-center mb-8 text-center">
                         <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-emerald-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-emerald-600/30 mb-4">
-                            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                            <img src="{{ asset('Imagens/minha_logo.png') }}" alt="Logo" class="w-12 h-12 object-contain mx-auto" />
                         </div>
                         <h1 class="text-xl font-semibold tracking-tight">{{ $title ?? 'Acesse sua conta' }}</h1>
                         @isset($subtitle)
@@ -59,4 +59,5 @@
             </div>
         </div>
     </body>
+</html>
 </html>
