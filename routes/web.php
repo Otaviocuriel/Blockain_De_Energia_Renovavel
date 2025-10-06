@@ -25,6 +25,13 @@ Route::get('/usuario', [PageController::class,'usuario'])->name('usuario');
 Route::post('/contratar/{empresa}', [PageController::class,'contratarPost'])->name('contratar.post');
 Route::get('/energia', [PageController::class,'energia'])->name('energia');
 
+// ==== ROTAS DE CADASTRO DE EMPRESA ====
+// Formulário de cadastro de empresa
+Route::get('/empresas/create', [PageController::class, 'empresaCreate'])->name('empresas.create');
+// Salvando empresa cadastrada
+Route::post('/empresas', [PageController::class, 'empresaStore'])->name('empresas.store');
+// =======================================
+
 Route::get('/dashboard', [DashboardController::class,'index'])
     ->middleware(['auth','verified'])
     ->name('dashboard');
@@ -115,6 +122,3 @@ Route::post('/empresa/endereco/update', function(Request $request) {
 })->name('empresa.endereco.update')->middleware('auth');
 
 require __DIR__.'/auth.php';
-
-require __DIR__.'/auth.php';
-
