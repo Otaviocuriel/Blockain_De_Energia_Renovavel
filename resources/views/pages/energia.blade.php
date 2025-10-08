@@ -31,29 +31,64 @@
         </div>
     </div>
 </div>
+
 <!-- Leaflet.js CDN -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        var map = L.map('map').setView([-22.3572, -47.3842], 10); // Araras
+        // Inicializa o mapa
+        var map = L.map('map').setView([-22.3572, -47.3842], 12); // Araras centro
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 18,
             attribution: '© OpenStreetMap'
         }).addTo(map);
 
-        // Marcação das cidades já existentes
+        // Markers estáticos (cidades)
+        var cidadesLayer = L.layerGroup().addTo(map);
         var cidades = [
             {nome: 'Araras', coords: [-22.3572, -47.3842], empresa: 'Araras Solar'},
             {nome: 'Leme', coords: [-22.1807, -47.3841], empresa: 'Energia Limpa Leme'},
             {nome: 'Rio Claro', coords: [-22.4149, -47.5606], empresa: 'Rio Claro Sustentável'}
         ];
         cidades.forEach(function(cidade) {
-            L.marker(cidade.coords).addTo(map)
+            L.marker(cidade.coords).addTo(cidadesLayer)
                 .bindPopup('<b>' + cidade.nome + '</b><br>' + cidade.empresa);
         });
 
-        // Variável para o marcador novo da empresa cadastrada
+        // Layer dinâmico para empresas vindas do banco
+        var empresasLayer = L.layerGroup().addTo(map);
+
+        async function loadEmpresas() {
+            try {
+                const res = await fetch('{{ route("api.empresas") }}');
+                if (!res.ok) throw new Error('Erro ao buscar empresas: ' + res.status);
+                const empresas = await res.json();
+                empresasLayer.clearLayers();
+
+                if (!empresas || empresas.length === 0) {
+                    return;
+                }
+
+                empresas.forEach(function(emp) {
+                    var lat = parseFloat(emp.latitude);
+                    var lon = parseFloat(emp.longitude);
+                    if (!isNaN(lat) && !isNaN(lon)) {
+                        L.marker([lat, lon])
+                            .addTo(empresasLayer)
+                            .bindPopup('<b>' + (emp.name || 'Empresa') + '</b><br>CEP: ' + (emp.cep || 'N/A'));
+                    }
+                });
+            } catch (err) {
+                console.error('Erro ao carregar empresas:', err);
+            }
+        }
+
+        // Carrega inicialmente e a cada 20s para captar novas empresas salvas sem recarregar a página
+        loadEmpresas();
+        setInterval(loadEmpresas, 20000);
+
+        // Marcação temporária ao pesquisar CEP (não salva no banco aqui)
         var novoMarker = null;
 
         // Função para buscar endereço pelo CEP
@@ -96,10 +131,10 @@
                 alert('Não foi possível localizar no mapa');
                 return;
             }
-            // Centraliza o mapa e adiciona (ou move) marcador
+            // Centraliza o mapa e adiciona (ou move) marcador temporário
             map.setView([coordenadas.lat, coordenadas.lon], 15);
-            if (novoMarker) map.removeLayer(novoMarker);
-            novoMarker = L.marker([coordenadas.lat, coordenadas.lon]).addTo(map)
+            if (novoMarker) empresasLayer.removeLayer(novoMarker);
+            novoMarker = L.marker([coordenadas.lat, coordenadas.lon]).addTo(empresasLayer)
                 .bindPopup('<b>Nova Empresa</b><br>' + enderecoCompleto)
                 .openPopup();
         });

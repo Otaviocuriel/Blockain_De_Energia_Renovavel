@@ -59,6 +59,15 @@ Route::get('/mapa-empresas', function() {
     return view('mapa.empresas', compact('empresas'));
 })->name('mapa.empresas');
 
+// Rota pública JSON para o mapa: retorna empresas com coordenadas
+Route::get('/api/empresas', function() {
+    return \App\Models\User::where('role', 'company')
+        ->whereNotNull('latitude')
+        ->whereNotNull('longitude')
+        ->get(['id','name','email','cep','latitude','longitude']);
+})->name('api.empresas');
+
+
 // Excluir empresa (apenas admin)
 Route::delete('/admin/empresa/{id}', function($id) {
     $user = Auth::user();
@@ -92,27 +101,65 @@ Route::post('/empresa/site/update', function(Request $request) {
     abort(403);
 })->name('empresa.site.update')->middleware('auth');
 
+/*
+ * ROTA ATUALIZADA: aceita latitude/longitude enviados pelo formulário (preferred),
+ * ou faz geocoding caso não venham. Também tenta melhorar geocode com ViaCEP quando o
+ * usuário inseriu somente o CEP.
+ */
 Route::post('/empresa/endereco/update', function(Request $request) {
     $user = auth()->user();
     if ($user && $user->role === 'company') {
         $request->validate([
-            'endereco' => 'required|string|max:255'
+            'endereco' => 'required|string|max:255',
+            // aceita lat/lon como nomes curtos ou completos
+            'lat' => 'nullable|numeric',
+            'lon' => 'nullable|numeric',
+            'latitude' => 'nullable|numeric',
+            'longitude' => 'nullable|numeric',
         ]);
+
         $user->endereco = $request->endereco;
 
-        // Geocodificação usando Nominatim (OpenStreetMap)
-        $response = Http::get('https://nominatim.openstreetmap.org/search', [
-            'q' => $user->endereco,
-            'format' => 'json',
-            'limit' => 1,
-        ]);
-        if ($response->ok() && count($response->json()) > 0) {
-            $geo = $response->json()[0];
-            $user->latitude = $geo['lat'];
-            $user->longitude = $geo['lon'];
+        // Verifica se o frontend já enviou coordenadas (prioridade)
+        $latFromRequest = $request->input('lat') ?? $request->input('latitude');
+        $lonFromRequest = $request->input('lon') ?? $request->input('longitude');
+
+        if ($latFromRequest && $lonFromRequest) {
+            $user->latitude = $latFromRequest;
+            $user->longitude = $lonFromRequest;
         } else {
-            $user->latitude = null;
-            $user->longitude = null;
+            // Se o endereco for provavelmente um CEP, tenta expandir com ViaCEP
+            $enderecoParaGeocode = $user->endereco;
+            $cepSomenteNumeros = preg_replace('/\D/', '', $user->endereco);
+            if (strlen($cepSomenteNumeros) === 8) {
+                $viacep = Http::get("https://viacep.com.br/ws/{$cepSomenteNumeros}/json/");
+                if ($viacep->ok() && !isset($viacep->json()['erro'])) {
+                    $v = $viacep->json();
+                    $logradouro = $v['logradouro'] ?? '';
+                    $bairro = $v['bairro'] ?? '';
+                    $localidade = $v['localidade'] ?? '';
+                    $uf = $v['uf'] ?? '';
+                    $enderecoParaGeocode = trim("{$logradouro}, {$bairro}, {$localidade}, {$uf}, Brasil");
+                }
+            }
+
+            // Chamada ao Nominatim com User-Agent (recomendado)
+            $response = Http::withHeaders([
+                'User-Agent' => 'CommitTCC/1.0 (contato@seuemail.com)',
+            ])->get('https://nominatim.openstreetmap.org/search', [
+                'q' => $enderecoParaGeocode,
+                'format' => 'json',
+                'limit' => 1,
+            ]);
+
+            if ($response->ok() && count($response->json()) > 0) {
+                $geo = $response->json()[0];
+                $user->latitude = $geo['lat'];
+                $user->longitude = $geo['lon'];
+            } else {
+                $user->latitude = null;
+                $user->longitude = null;
+            }
         }
 
         $user->save();

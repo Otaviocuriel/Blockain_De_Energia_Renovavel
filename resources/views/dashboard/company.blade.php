@@ -35,9 +35,9 @@
         Endereço da Empresa:
         <input type="text" id="endereco" name="endereco" value="{{ old('endereco', $user->endereco) }}" class="mt-1 px-3 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 w-72" placeholder="Rua, número, cidade, estado ou CEP" required autocomplete="off">
       </label>
-      <!-- Campos ocultos para lat/lon -->
-      <input type="hidden" id="lat" name="lat" value="{{ old('lat', $user->lat) }}">
-      <input type="hidden" id="lon" name="lon" value="{{ old('lon', $user->lon) }}">
+      <!-- Campos ocultos para latitude/longitude (names correspondem às colunas DB) -->
+      <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude', $user->latitude) }}">
+      <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude', $user->longitude) }}">
       <button type="submit" class="px-4 py-2 mt-2 rounded bg-emerald-600 text-white font-semibold">Salvar</button>
     </form>
     @if(session('success'))
@@ -74,8 +74,8 @@
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Inicia com a posição salva, ou padrão Araras-SP
-    var lat = parseFloat(document.getElementById('lat').value) || -22.3572;
-    var lon = parseFloat(document.getElementById('lon').value) || -47.3842;
+    var lat = parseFloat(document.getElementById('latitude').value) || -22.3572;
+    var lon = parseFloat(document.getElementById('longitude').value) || -47.3842;
     var map = L.map('map').setView([lat, lon], 13);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
@@ -102,17 +102,25 @@ document.addEventListener('DOMContentLoaded', function() {
 
     document.getElementById('endereco').addEventListener('blur', async function() {
         let endereco = this.value;
-        if (!endereco || endereco.length < 8) {
-            alert('Endereço inválido');
+        if (!endereco || endereco.length < 3) {
+            // permite buscas curtas também (ex: CEP de 8 chars) — validação do servidor cobre o restante
             return;
         }
+        // Mostra loading leve enquanto busca
+        var previousPlaceholder = this.placeholder;
+        this.placeholder = 'Buscando coordenadas...';
+
         let coordenadas = await buscarCoordenadasPorEndereco(endereco);
+
+        this.placeholder = previousPlaceholder;
+
         if (!coordenadas) {
             alert('Não foi possível localizar no mapa');
             return;
         }
-        document.getElementById('lat').value = coordenadas.lat;
-        document.getElementById('lon').value = coordenadas.lon;
+        // Preenche campos hidden (names usados pelo servidor: latitude/longitude)
+        document.getElementById('latitude').value = coordenadas.lat;
+        document.getElementById('longitude').value = coordenadas.lon;
 
         map.setView([coordenadas.lat, coordenadas.lon], 16);
         if (marker) map.removeLayer(marker);
@@ -120,11 +128,11 @@ document.addEventListener('DOMContentLoaded', function() {
             .bindPopup('Confirme a localização da empresa!').openPopup();
     });
 
-    // Garante que lat/lon são enviados ao enviar o formulário
+    // Garante que latitude/longitude são enviados ao enviar o formulário
     document.getElementById('form-endereco').addEventListener('submit', function(e) {
-        if (!document.getElementById('lat').value || !document.getElementById('lon').value) {
+        if (!document.getElementById('latitude').value || !document.getElementById('longitude').value) {
             e.preventDefault();
-            alert('Por favor, preencha um endereço válido e aguarde o mapa carregar a localização!');
+            alert('Por favor, preencha um endereço válido (ou CEP) e aguarde o mapa localizar a posição antes de salvar.');
         }
     });
 });
