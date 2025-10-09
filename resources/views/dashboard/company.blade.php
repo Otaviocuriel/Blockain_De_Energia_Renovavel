@@ -27,17 +27,35 @@
     @endif
   </div>
 
-  <!-- Formulário para cadastrar/editar endereço -->
+  <!-- Formulário para cadastrar/editar endereço, cidade e tipo de energia -->
   <div class="mb-8">
     <form method="POST" action="{{ route('empresa.endereco.update') }}" class="flex flex-col gap-2 items-start" id="form-endereco">
       @csrf
       <label class="block text-sm text-gray-700 dark:text-gray-200 w-full">
         Endereço da Empresa:
-        <input type="text" id="endereco" name="endereco" value="{{ old('endereco', $user->endereco) }}" class="mt-1 px-3 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 w-72" placeholder="Rua, número, cidade, estado ou CEP" required autocomplete="off">
+        <input type="text" id="endereco" name="endereco" value="{{ old('endereco', $user->endereco) }}" class="mt-1 px-3 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 w-80" placeholder="Rua, número, cidade, estado ou CEP" required autocomplete="off">
       </label>
+
+      <label class="block text-sm text-gray-700 dark:text-gray-200 w-full">
+        Cidade:
+        <input type="text" id="cidade" name="cidade" value="{{ old('cidade', $user->cidade) }}" class="mt-1 px-3 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 w-64" placeholder="Cidade (opcional)">
+      </label>
+
+      <label class="block text-sm text-gray-700 dark:text-gray-200 w-full">
+        Tipo de Energia:
+        <select id="tipo_energia" name="tipo_energia" class="mt-1 px-3 py-2 rounded-md bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 w-64">
+          <option value="" {{ empty(old('tipo_energia', $user->tipo_energia)) ? 'selected' : '' }}>Selecione</option>
+          <option value="Solar" {{ (old('tipo_energia', $user->tipo_energia) == 'Solar') ? 'selected' : '' }}>Solar</option>
+          <option value="Eólica" {{ (old('tipo_energia', $user->tipo_energia) == 'Eólica') ? 'selected' : '' }}>Eólica</option>
+          <option value="Híbrida" {{ (old('tipo_energia', $user->tipo_energia) == 'Híbrida') ? 'selected' : '' }}>Híbrida</option>
+          <option value="Outros" {{ (old('tipo_energia', $user->tipo_energia) == 'Outros') ? 'selected' : '' }}>Outros</option>
+        </select>
+      </label>
+
       <!-- Campos ocultos para latitude/longitude (names correspondem às colunas DB) -->
       <input type="hidden" id="latitude" name="latitude" value="{{ old('latitude', $user->latitude) }}">
       <input type="hidden" id="longitude" name="longitude" value="{{ old('longitude', $user->longitude) }}">
+
       <button type="submit" class="px-4 py-2 mt-2 rounded bg-emerald-600 text-white font-semibold">Salvar</button>
     </form>
     @if(session('success'))
@@ -93,29 +111,30 @@ document.addEventListener('DOMContentLoaded', function() {
         const url = `https://nominatim.openstreetmap.org/search?format=json&q=${query}`;
         const resposta = await fetch(url);
         const dados = await resposta.json();
-        if (dados.length === 0) return null;
+        if (!dados || dados.length === 0) return null;
         return {
             lat: parseFloat(dados[0].lat),
             lon: parseFloat(dados[0].lon)
         };
     }
 
+    // Ao sair do campo endereco, busca coords e preenche latitude/longitude
     document.getElementById('endereco').addEventListener('blur', async function() {
         let endereco = this.value;
         if (!endereco || endereco.length < 3) {
-            // permite buscas curtas também (ex: CEP de 8 chars) — validação do servidor cobre o restante
             return;
         }
-        // Mostra loading leve enquanto busca
         var previousPlaceholder = this.placeholder;
         this.placeholder = 'Buscando coordenadas...';
 
+        // tenta Nominatim diretamente (o servidor também tem fallback ViaCEP)
         let coordenadas = await buscarCoordenadasPorEndereco(endereco);
 
         this.placeholder = previousPlaceholder;
 
         if (!coordenadas) {
-            alert('Não foi possível localizar no mapa');
+            // opcional: tentar ViaCEP aqui no cliente e depois Nominatim — deixei no backend como fallback
+            // alert('Não foi possível localizar no mapa');
             return;
         }
         // Preenche campos hidden (names usados pelo servidor: latitude/longitude)

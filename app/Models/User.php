@@ -15,25 +15,30 @@ class User extends Authenticatable
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int,string>
      */
     protected $fillable = [
         'name',
         'email',
-    'password',
-    'role',
-    'cpf',
-    'cnpj',
-    'telefone',
-    'cep',
-    'data_nascimento',
-    'cargo',
+        'password',
+        'role',
+        'cpf',
+        'cnpj',
+        'telefone',
+        'cep',
+        'endereco',
+        'cidade',
+        'tipo_energia',
+        'latitude',
+        'longitude',
+        'data_nascimento',
+        'cargo',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int,string>
      */
     protected $hidden = [
         'password',
@@ -41,18 +46,17 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string,string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'data_nascimento' => 'date',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'data_nascimento' => 'date',
+        'latitude' => 'float',
+        'longitude' => 'float',
+    ];
 
     // Accessor para mostrar CPF/CNPJ sem formatação adicional (já armazenado limpo ou formatado)
     public function getDocumentoAttribute(): ?string

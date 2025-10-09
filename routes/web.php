@@ -59,12 +59,11 @@ Route::get('/mapa-empresas', function() {
     return view('mapa.empresas', compact('empresas'));
 })->name('mapa.empresas');
 
-// Rota pública JSON para o mapa: retorna empresas com coordenadas
+// Rota pública JSON para o mapa: retorna TODAS as empresas (sem filtrar por latitude/longitude),
+// assim a lista/cards mostra tudo e o frontend desenha marcadores apenas onde houver coords.
 Route::get('/api/empresas', function() {
     return \App\Models\User::where('role', 'company')
-        ->whereNotNull('latitude')
-        ->whereNotNull('longitude')
-        ->get(['id','name','email','cep','latitude','longitude']);
+        ->get(['id','name','email','cep','endereco','cidade','tipo_energia','latitude','longitude']);
 })->name('api.empresas');
 
 
@@ -103,26 +102,32 @@ Route::post('/empresa/site/update', function(Request $request) {
 
 /*
  * ROTA ATUALIZADA: aceita latitude/longitude enviados pelo formulário (preferred),
- * ou faz geocoding caso não venham. Também tenta melhorar geocode com ViaCEP quando o
- * usuário inseriu somente o CEP.
+ * salva cidade e tipo_energia quando enviados, ou tenta ViaCEP + Nominatim.
  */
 Route::post('/empresa/endereco/update', function(Request $request) {
     $user = auth()->user();
     if ($user && $user->role === 'company') {
         $request->validate([
             'endereco' => 'required|string|max:255',
-            // aceita lat/lon como nomes curtos ou completos
-            'lat' => 'nullable|numeric',
-            'lon' => 'nullable|numeric',
             'latitude' => 'nullable|numeric',
             'longitude' => 'nullable|numeric',
+            'cidade' => 'nullable|string|max:120',
+            'tipo_energia' => 'nullable|string|max:120',
         ]);
 
-        $user->endereco = $request->endereco;
+        $user->endereco = $request->input('endereco');
 
-        // Verifica se o frontend já enviou coordenadas (prioridade)
-        $latFromRequest = $request->input('lat') ?? $request->input('latitude');
-        $lonFromRequest = $request->input('lon') ?? $request->input('longitude');
+        // Salva cidade/tipo se vierem do formulário
+        if ($request->filled('cidade')) {
+            $user->cidade = $request->input('cidade');
+        }
+        if ($request->filled('tipo_energia')) {
+            $user->tipo_energia = $request->input('tipo_energia');
+        }
+
+        // Prioriza coordenadas enviadas pelo frontend
+        $latFromRequest = $request->input('latitude');
+        $lonFromRequest = $request->input('longitude');
 
         if ($latFromRequest && $lonFromRequest) {
             $user->latitude = $latFromRequest;
@@ -140,6 +145,10 @@ Route::post('/empresa/endereco/update', function(Request $request) {
                     $localidade = $v['localidade'] ?? '';
                     $uf = $v['uf'] ?? '';
                     $enderecoParaGeocode = trim("{$logradouro}, {$bairro}, {$localidade}, {$uf}, Brasil");
+                    // se cidade estiver vazia, preenche com localidade do ViaCEP
+                    if (empty($user->cidade) && !empty($localidade)) {
+                        $user->cidade = $localidade;
+                    }
                 }
             }
 
@@ -156,9 +165,6 @@ Route::post('/empresa/endereco/update', function(Request $request) {
                 $geo = $response->json()[0];
                 $user->latitude = $geo['lat'];
                 $user->longitude = $geo['lon'];
-            } else {
-                $user->latitude = null;
-                $user->longitude = null;
             }
         }
 
