@@ -104,32 +104,62 @@
         @yield('content')
     </main>
 
-    <footer class="mt-12 bg-black text-white py-10 text-sm border-t border-white/10">
-        <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
-            <div>
-                <h3 class="font-semibold mb-2">Sobre</h3>
-                <p class="opacity-80 leading-relaxed">Plataforma dedicada à compra e venda de energia renovável com transparência e rastreabilidade garantida.</p>
-            </div>
-            <div>
-                <h3 class="font-semibold mb-2">Links</h3>
-                <ul class="space-y-1">
-                    <li><a href="{{ route('home') }}" class="hover:underline">Início</a></li>
-                    <li><a href="{{ route('energia') }}" class="hover:underline">Mapa de Energia</a></li>
-                    <li><a href="{{ route('comentarios') }}" class="hover:underline">Comentários</a></li>
-                    <li><a href="{{ route('servicos') }}" class="hover:underline">Serviços</a></li>
-                    <li><a href="{{ route('contato') }}" class="hover:underline">Contato</a></li>
-                    <li><a href="{{ route('blockchain.page') }}" class="hover:underline">Blockchain</a></li>
-                </ul>
-            </div>
-            <div>
-                <h3 class="font-semibold mb-2">Contato</h3>
-                <p class="opacity-80">📧 ruan.otavio@blockchainverde.com<br>📞 (11) 99999-9999<br>📍 São Paulo - SP</p>
-            </div>
-        </div>
-        <div class="mt-8 border-t border-white/10 pt-4 text-center opacity-70">
-            &copy; {{ date('Y') }} Blockchain Verde. Todos os direitos reservados.
-        </div>
-    </footer>
+<footer class="mt-12 bg-black text-white py-10 text-sm border-t border-white/10">
+  <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
+    <div>
+      <h3 class="font-semibold mb-2">Sobre</h3>
+      <p class="opacity-80 leading-relaxed">Plataforma dedicada à compra e venda de energia renovável com transparência e rastreabilidade garantida.</p>
+    </div>
+    <div>
+      <h3 class="font-semibold mb-2">Links</h3>
+      <ul class="space-y-1">
+        <li><a href="{{ route('home') }}" class="hover:underline">Início</a></li>
+        <li><a href="{{ route('energia') }}" class="hover:underline">Mapa de Energia</a></li>
+        <li><a href="{{ route('comentarios') }}" class="hover:underline">Comentários</a></li>
+        <li><a href="{{ route('servicos') }}" class="hover:underline">Serviços</a></li>
+        <li><a href="{{ route('contato') }}" class="hover:underline">Contato</a></li>
+        <li><a href="{{ route('blockchain.page') }}" class="hover:underline">Blockchain</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3 class="font-semibold mb-2">Contato</h3>
+      <p class="opacity-80">
+        📧 otavio.curiel@etec.sp.gov.br<br>
+        📞 <a href="tel:+55(19)993878979" class="hover:underline">+55 (19)99387-8979</a><br>
+        📍 São Paulo - SP
+      </p>
+
+    
+      <div class="mt-3 flex items-center gap-4">
+        
+        <a href="https://github.com/Otaviocuriel" target="_blank" rel="noopener noreferrer" aria-label="GitHub de Otaviocuriel" class="inline-flex items-center gap-2 text-sm opacity-90 hover:opacity-100">
+          <img
+            src="https://github.com/Otaviocuriel.png?s=128"
+            alt="Otaviocuriel — GitHub"
+            class="w-8 h-8 rounded-full object-cover shadow-sm"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='{{ asset('images/otaviocuriel.jpg') }}';"
+          >
+          <span class="hidden sm:inline">Otaviocuriel</span>
+        </a>
+        <a href="https://github.com/Ruan236" target="_blank" rel="noopener noreferrer" aria-label="GitHub de Ruan236" class="inline-flex items-center gap-2 text-sm opacity-90 hover:opacity-100">
+          <img
+            src="https://github.com/Ruan236.png?s=128"
+            alt="Ruan236 — GitHub"
+            class="w-8 h-8 rounded-full object-cover shadow-sm"
+            loading="lazy"
+            onerror="this.onerror=null;this.src='{{ asset('images/ruan236.jpg') }}';">
+          <span class="hidden sm:inline">Ruan236</span>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8 border-t border-white/10 pt-4 text-center opacity-70">
+    &copy; {{ date('Y') }} Blockchain Verde. Todos os direitos reservados.
+  </div>
+</footer>
 
     
     <script>
