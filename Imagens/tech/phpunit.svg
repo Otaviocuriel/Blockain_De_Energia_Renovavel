@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="100" height="100">
+  <title>PHPUnit</title>
+  <rect fill="#3F9FD8" width="256" height="256" rx="20"/>
+  <path fill="#FFFFFF" d="M45 80h30c20 0 32 12 32 30s-12 30-32 30H60v30H45V80zm15 45h12c12 0 18-5 18-15s-6-15-18-15H60v30z"/>
+  <path fill="#FFFFFF" d="M115 80h15v40h35V80h15v90h-15v-35h-35v35h-15V80z"/>
+  <path fill="#FFFFFF" d="M190 80h30c20 0 32 12 32 30s-12 30-32 30h-15v30h-15V80zm15 45h12c12 0 18-5 18-15s-6-15-18-15h-12v30z"/>
+  <path fill="#FFFFFF" d="M45 185h166v10H45z"/>
+</svg>
