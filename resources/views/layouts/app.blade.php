@@ -104,6 +104,7 @@
         @yield('content')
     </main>
 
+    {{-- restored inline footer (replaced the partial include) --}}
 <footer class="mt-12 bg-black text-white py-10 text-sm border-t border-white/10">
   <div class="max-w-7xl mx-auto px-4 grid md:grid-cols-3 gap-8">
     <div>
@@ -160,17 +161,5 @@
     &copy; {{ date('Y') }} Blockchain Verde. Todos os direitos reservados.
   </div>
 </footer>
-
-    
-    <script>
-        window.Laravel = {
-            isAuthenticated: @json(auth()->check())
-        };
-    </script>
-
-    <script>window.ethersLoaded = false;</script>
-    <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.min.js"></script>
-    <script>window.ethersLoaded = typeof ethers !== 'undefined';</script>
-    <script src="{{ asset('js/blockchain.js') }}"></script>
 </body>
 </html>
