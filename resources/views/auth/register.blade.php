@@ -118,11 +118,27 @@
               <div class="col-span-2 grid grid-cols-2 gap-3 items-end">
                 <div>
                   <label class="block text-sm text-white/80">Senha</label>
-                  <input name="password" type="password" class="mt-1 w-full px-3 py-2 rounded-md bg-slate-800 text-white border border-white/5" required>
+                  <div class="relative mt-1">
+                    <input id="password" name="password" type="password" class="w-full px-3 py-2 rounded-md bg-slate-800 text-white border border-white/5 pr-10" required>
+                    <button type="button" class="toggle-password absolute inset-y-0 right-2 flex items-center text-slate-300" data-target="password" aria-label="Mostrar senha" aria-pressed="false">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
                 <div>
                   <label class="block text-sm text-white/80">Confirmar Senha</label>
-                  <input name="password_confirmation" type="password" class="mt-1 w-full px-3 py-2 rounded-md bg-slate-800 text-white border border-white/5" required>
+                  <div class="relative mt-1">
+                    <input id="password_confirmation" name="password_confirmation" type="password" class="w-full px-3 py-2 rounded-md bg-slate-800 text-white border border-white/5 pr-10" required>
+                    <button type="button" class="toggle-password absolute inset-y-0 right-2 flex items-center text-slate-300" data-target="password_confirmation" aria-label="Mostrar confirmação de senha" aria-pressed="false">
+                      <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
               </div>
               <!-- Actions: submit + link to login -->
@@ -160,9 +176,38 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 });
 </script>
- </body>
- </html>
-});
+<script>
+(function(){
+  function setIcon(btn, visible){
+    // eye-off when visible=true, eye when visible=false
+    btn.innerHTML = visible
+      ? '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a11.97 11.97 0 012.223-3.99M6.6 6.6A10.05 10.05 0 0112 5c4.477 0 8.268 2.943 9.542 7a11.976 11.976 0 01-1.318 3.058M3 3l18 18"/></svg>'
+      : '<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>';
+  }
+
+  document.addEventListener('click', function(e){
+    var btn = e.target.closest && e.target.closest('.toggle-password');
+    if (!btn) return;
+    var targetId = btn.dataset.target;
+    var input = document.getElementById(targetId);
+    if (!input) return;
+    var nowVisible = input.type === 'text';
+    if (nowVisible) {
+      input.type = 'password';
+      btn.setAttribute('aria-pressed','false');
+      setIcon(btn, false);
+    } else {
+      input.type = 'text';
+      btn.setAttribute('aria-pressed','true');
+      setIcon(btn, true);
+    }
+  });
+
+  // Optional: initialize icons for any toggle buttons present at load
+  document.querySelectorAll('.toggle-password').forEach(function(b){
+    setIcon(b, false);
+  });
+})();
 </script>
  </body>
  </html>
