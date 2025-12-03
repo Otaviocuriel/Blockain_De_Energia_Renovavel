@@ -161,5 +161,42 @@
     &copy; {{ date('Y') }} Blockchain Verde. Todos os direitos reservados.
   </div>
 </footer>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+   
+    const pattern = /ex:\s*\d{1,3}(?:[.\s]\d{3})*(?:[\.,]\d{2})?/gi;
+
+    function cleanString(s) {
+        if (!s) return s;
+        return s.replace(pattern, '').replace(/\s{2,}/g, ' ').trim();
+    }
+
+    
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT, null, false);
+    let node;
+    while (node = walker.nextNode()) {
+        if (pattern.test(node.nodeValue)) {
+            node.nodeValue = cleanString(node.nodeValue);
+        }
+    }
+
+    // Limpa atributos comuns (placeholder, title, aria-label, alt) e valores de inputs/textarea
+    const attrNames = ['placeholder', 'title', 'aria-label', 'alt'];
+    document.querySelectorAll('*').forEach(el => {
+        attrNames.forEach(attr => {
+            if (el.hasAttribute && el.hasAttribute(attr)) {
+                const val = el.getAttribute(attr);
+                if (val && pattern.test(val)) {
+                    el.setAttribute(attr, cleanString(val));
+                }
+            }
+        });
+
+        if ((el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') && el.value && pattern.test(el.value)) {
+            el.value = cleanString(el.value);
+        }
+    });
+});
+</script>
 </body>
 </html>
